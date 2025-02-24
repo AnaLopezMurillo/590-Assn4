@@ -1,0 +1,51 @@
+Write an Erlang program that will use the "send_recv" module we discusses in the video as a pattern or guide. You will write a chain of 3 "servers" which are processes that are in a chain communication pattern. Lets call for this discussion the servers serv1, serv2, and serv3. The head of the chain is serv1, which will be communicating with serv2; serv2 will communicate with serv3. The serv1 process will receieve messages (from the main function) and possibly send what it received on to serv2. The serv2 process will receieve messages from serv1 and possibly send what it received on to serv3; likewise, the serv3 process will receieve messages from serv2 but will not send any messages onward.
+
+The basic specs are these:
+
+-- all 3 server processes run potentially "forever" (except each will end when a halt message 
+   is received)
+
+-- each one will examine messages it receives looking for ones that
+   it knows how to handle; on finding one, it will processes it as
+   its job requires;  if a message does not match the pattern(s) 
+   that it handles, the server process will pass that message down the chain.
+
+-- serv1 will do much like the math servers from our example code.  It will intercept messages
+   that are tuples of size 3 or size 2.  A size 3 tuple will have the first component the 
+   atom 'add', 'sub', 'mult' or 'div', and the rest of the message will be 2 numbers.  
+   Perform the indicated arithmetic operation with component 2 the left operand and component 
+   3 the right operand.  In addition, a size 2 tuple will have the first component the atom 
+   'neg' or 'sqrt' and the second component the numbers to apply the appropriate operation on.  
+   For all messages, print an informative message indicating the operation, the operands, and 
+   the result.  If the message does not match any of these patterns, then send the message 
+   on to serv2. 
+
+-- serv2 will intercept mesages that consist of lists, where the head element in the list
+   is a number. if that number is an integer, then print out the sum of all elements in
+   the list that are numbers.  If the head element of the list is a float, then compute and
+   print the product of all the numbers in the list (integer or float).
+   If the message does not match any of these patterns, then send the message on to serv3.
+
+-- serv3 will get all the messages that the processes earlier in the chain
+   dont want to handle.  If the message is a tuple of size 2, with the first component
+   the atom 'error' then print "Error: " and the second component of the message tuple.
+   For any other message keep a running count of the unprocessed messages.  Simply print 
+   out "Not handled: " followed by the message; also bump up the unprocessed message count.  
+   To do this you will need an accumulator that you pass to each successive recursive server 
+   call.  This means the serv3 function you make into a process will use a helper recursive 
+   function that takes one parameter (the accumulator) and starts with 0 as that parameter.
+
+-- each server process is doing some printing.  Any output they make should have the first 
+   part indetify the process doing the writing -- something like "(serv1) whatever the 
+   output text is..."
+
+-- in addition to the various different message patterns each server process will watch for,
+   all 3 processes will also respond to a shut down message.  The message will be the single 
+   atom 'halt' and the server behavior will be to forward the 'halt' message down the chain, 
+   then print out that it is halting, and finally end its own execution (meaning do not recurse 
+   for more message handling).  For the end of the chain, the serv3 process, which is counting 
+   all messages not processed, print a note with the value of that counter before doing its 
+   halt sequence.
+
+The main function (let's call it "start/0") will repeatedly as the user to type a message as input, and will send the message to serv1 at the head on the chain. If the user types the atom 'all_done' then the main start function will end execution.
+

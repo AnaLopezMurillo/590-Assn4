@@ -1,0 +1,34 @@
+where is send_recv module?
+
+serv1 --> serv2 --> serv3
+    - only send down if service does not know how to handle it
+
+halt message = all_done
+
+serv1:
+- accepts tuples of size 2 or 3
+    size 3:
+        first component must be the atom add, sub, mult, div, rest are 2 nums. do the operation
+    size 2:
+        first is neg or sqrt, second is num to apply to
+- prints message indicating operation, operands, and result
+
+serv2:
+- accepts list where head element in a #
+    if head is int:
+        print out sum of all elements in list that are nums
+    if head is float:
+        print out product of all nums in list
+    
+serv3:
+- if tuple of size 2 and head is atom 'error':
+    print out second component of tuple
+- else:
+    - keep running count of unprocessed messages: "Not handled: " + message, +=1 to unprocessed message count
+    - add accumulator to each successive recursive server call 
+    - serv3 will be helper recursive function that takes 1 param (acc) and starts at 0
+
+- every process responds to a shutdown message: 'halt'
+- send this down the chain to print out halting, end its own execution. at serv3, print out acc counter and perform halt sequence
+
+main start/0 will ask for input and takes all_done as the starting of the halt mechanism
