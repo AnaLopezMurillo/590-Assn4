@@ -4,30 +4,30 @@
 start() ->  
     io:format("~nStarting...~n"),
     % take in a user message
-    {ok, Msg} = io:read("Enter something: "),
+    {ok, Input} = io:read("Enter something: "),
 
     Serv1 = spawn(?MODULE, loop1, []),
 
-    Serv1 ! {self(), Msg},
+    Serv1 ! {self(), Input},
     receive
-        {Serv1, Msg1} ->
-            io:format("~n(Serv1) responded with: ~w~n", [Msg1])
+        {Serv1, res} ->
+            io:format("~n(Serv1) responded with: ~w~n", [res])
     end,
 
-    timer:sleep(2000),
-    
     Serv1 ! stop.
 
 loop1() -> 
     % this is serv1
     receive
         {From, Msg} ->
-            io:format("(Serv1) received: ~w~n", [Msg]),
-            From ! {self(), Msg},
+            io:fwrite("(Serv1) received: ~w of size ~w~n", [Msg, tuple_size(Msg)]),
+            io:format("Returned"),
+            From ! {self(), Input},
             loop1();
         stop ->
             true
     end.
+
 
 loop2() -> 
     % this is serv2
@@ -39,6 +39,7 @@ loop2() ->
         stop ->
             true
     end.
+
 
 loop3() -> 
     % this is serv3
