@@ -24,22 +24,36 @@ loop1() ->
 
             if 
                 tuple_size(Msg) == 3 ->
-                    io:format("Entered a tuple of size 3.~n");
+                    io:format("Entered a tuple of size 3.~n"),
+                    Op = element(1, Msg),
+                    N1 = element(2, Msg),
+                    N2 = element(3, Msg),
+                    io:format("Operation: ~w", [serv1_compute(Op, N1, N2)]);
                 tuple_size(Msg) == 2 -> 
                     io:format("Entered size 2.~n");
             true ->
                 io:format("Throw an error here~n")
             end,
 
-            Op = element(1, Msg),
-            N1 = element(2, Msg),
-            N2 = element(3, Msg),
-            io:format("Operation: ~w", [apply(erlang, Op, [N1, N2])]),
-
             From ! {self(), Msg},
             loop1();
         stop ->
             true
+    end.
+
+serv1_compute(Op, N1, N2) -> 
+    % add, sub, mult, div
+    case Op of 
+        add -> N1 + N2;
+        sub -> N1 - N2;
+        mult -> N1 * N2;
+    _ -> 
+        % this is div case
+        try apply(erlang, Op, [N1, N2]) of
+            Result -> Result
+        catch
+            _:_ -> io:format("ERROR HERRRREEEEEE")
+        end
     end.
 
 loop2() -> 
