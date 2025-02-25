@@ -10,8 +10,8 @@ start() ->
 
     Serv1 ! {self(), Input},
     receive
-        {Serv1, res} ->
-            io:format("~n(Serv1) responded with: ~w~n", [res])
+        {Serv1, Response} ->
+            io:format("~n(Serv1) responded with: ~w~n", [Response])
     end,
 
     Serv1 ! stop.
@@ -22,7 +22,7 @@ loop1() ->
         {From, Msg} ->
             io:fwrite("(Serv1) received: ~w of size ~w~n", [Msg, tuple_size(Msg)]),
             io:format("Returned"),
-            From ! {self(), Input},
+            From ! {self(), Msg},
             loop1();
         stop ->
             true
