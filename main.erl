@@ -21,14 +21,14 @@ loop1() ->
     receive
         {From, Msg} ->
             io:fwrite("(Serv1) received: ~w of size ~w~n", [Msg, tuple_size(Msg)]),
-
             if 
                 tuple_size(Msg) == 3 ->
                     io:format("Entered a tuple of size 3.~n"),
                     Op = element(1, Msg),
                     N1 = element(2, Msg),
                     N2 = element(3, Msg),
-                    io:format("Operation: ~w", [serv1_compute(Op, N1, N2)]);
+                    {OpName, Result} = serv1_compute(Op, N1, N2),
+                    io:format("~p ~s ~p = ~p~n", [N1, OpName, N2, Result]);
                 tuple_size(Msg) == 2 -> 
                     io:format("Entered size 2.~n");
             true ->
@@ -44,13 +44,13 @@ loop1() ->
 serv1_compute(Op, N1, N2) -> 
     % add, sub, mult, div
     case Op of 
-        add -> N1 + N2;
-        sub -> N1 - N2;
-        mult -> N1 * N2;
+        add -> {"+", (N1 + N2)};
+        sub -> {"-", (N1 - N2)};
+        mult -> {"*", (N1 * N2)};
     _ -> 
         % this is div case
         try apply(erlang, Op, [N1, N2]) of
-            Result -> Result
+            Result -> {"/", (Result)}
         catch
             _:_ -> io:format("ERROR HERRRREEEEEE")
         end
