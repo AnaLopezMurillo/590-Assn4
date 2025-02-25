@@ -21,13 +21,26 @@ loop1() ->
     receive
         {From, Msg} ->
             io:fwrite("(Serv1) received: ~w of size ~w~n", [Msg, tuple_size(Msg)]),
-            io:format("Returned"),
+
+            if 
+                tuple_size(Msg) == 3 ->
+                    io:format("Entered a tuple of size 3.~n");
+                tuple_size(Msg) == 2 -> 
+                    io:format("Entered size 2.~n");
+            true ->
+                io:format("Throw an error here~n")
+            end,
+
+            Op = element(1, Msg),
+            N1 = element(2, Msg),
+            N2 = element(3, Msg),
+            io:format("Operation: ~w", [apply(erlang, Op, [N1, N2])]),
+
             From ! {self(), Msg},
             loop1();
         stop ->
             true
     end.
-
 
 loop2() -> 
     % this is serv2
