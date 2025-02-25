@@ -2,11 +2,21 @@
 -compile([export_all]).
 
 start() ->  
-    io:format("Starting"),
-    serv1 = spawn(?MODULE, loop1, []),
+    io:format("~nStarting...~n"),
+    % take in a user message
+    {ok, Msg} = io:read("Enter something: "),
 
+    Serv1 = spawn(?MODULE, loop1, []),
+
+    Serv1 ! {self(), Msg},
+    receive
+        {Serv1, Msg1} ->
+            io:format("~n(Serv1) responded with: ~w~n", [Msg1])
+    end,
+
+    timer:sleep(2000),
     
-    serv1 ! stop.
+    Serv1 ! stop.
 
 loop1() -> 
     % this is serv1
