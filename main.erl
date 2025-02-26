@@ -28,7 +28,7 @@ loop1() ->
                     N1 = element(2, Msg),
                     N2 = element(3, Msg),
                     {OpName, Result} = serv1_compute(Op, N1, N2),
-                    io:format("~p ~s ~p = ~p~n", [N1, OpName, N2, Result]);
+                    io:format("~p ~s ~p = ~p", [N1, OpName, N2, Result]);
                 tuple_size(Msg) == 2 -> 
                     io:format("Entered size 2.~n");
             true ->
@@ -44,11 +44,13 @@ loop1() ->
 serv1_compute(Op, N1, N2) -> 
     % add, sub, mult, div
     case Op of 
-        add -> {"+", (N1 + N2)};
-        sub -> {"-", (N1 - N2)};
-        mult -> {"*", (N1 * N2)};
+        'add' -> {"+", (N1 + N2)};
+        'sub' -> {"-", (N1 - N2)};
+        'mult' -> {"*", (N1 * N2)};
+        'div' -> {"/", (N1 / N2)};
     _ -> 
-        % this is div case
+        % this is div case bc "div" is a reserved keyword in erlang lol
+        io:format("~n We are here"),
         try apply(erlang, Op, [N1, N2]) of
             Result -> {"/", (Result)}
         catch
