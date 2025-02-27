@@ -1,4 +1,4 @@
--module(erl_CK).
+-module(send_recv).
 -export([start/0, loop/1, serv1/1, serv2/1, serv3/1]).
 
 % start function initializes processes and starts user input loop
